@@ -1,0 +1,12 @@
+module Extensions
+
+imports Names 
+        TypeExpr
+
+context-free syntax
+  
+  PackageType.PackageType = ModTypePath
+  PackageType.PackageType = ModTypePath "with" {PackageConstraint "and"}*
+  
+  PackageConstraint.PackageConstraint = "type" TypeConstr "=" TypeExpr
+  

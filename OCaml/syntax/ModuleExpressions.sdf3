@@ -1,0 +1,60 @@
+module ModuleExpressions
+
+imports
+  Lexical 
+  TypesAndExceptions 
+  Classes
+  Names
+  TypeExpr
+  ModuleTypes
+  Extensions
+  Expressions
+  
+context-free syntax
+  
+  Definition.DefinitionVal = "val" ValueName ":" TypeExpr
+  Definition.LetDef        = "let" {LetBinding "and"}+
+  Definition.LetRecDef     = "let" "rec" {LetBinding "and"}+
+  Definition.External      = "external" ValueName ":" TypeExpr "=" ExternalDeclaration
+  Definition.TypeDef       = TypeDefinition
+  Definition.ExceptionDef  = ExceptionDefinition
+  Definition.ClassDef      = ClassDefinition
+  Definition.ClassSpec     = ClassSpecification
+  Definition.ClassTypeDef  = ClassTypeDefinition
+  Definition.ModuleDef1    = "module" ModuleName ModuleNameTypeParam* ColonModuleTypeOpt "=" ModuleExpr
+  Definition.ModuleDef2    = "module" ModuleName ModuleNameTypeParam* ":" ModuleType 
+  Definition.ModuleType    = "module" "type" ModTypeName "=" ModuleType
+  Definition.ModuleType    = "module" "type" ModTypeName 
+  Definition.ModuleRec1    = "module" "rec" ModuleName ":" ModuleType "=" ModuleExpr AndModuleTypeModuleExpr*
+  Definition.ModuleRec2    = "module" "rec" ModuleName ":" ModuleType AndModuleType*
+  Definition.Open          = "open" ModulePath
+  Definition.Include1      = "include" ModuleExpr
+  Definition.Include2      = "include" ModuleType
+  
+  ModuleNameTypeParam.ModuleNameTypeParam = "(" ModuleName ":" ModuleType ")"
+  ColonModuleTypeOpt.NoModuleType =
+  ColonModuleTypeOpt.Moduletype = ":" ModuleType
+  AndModuleTypeModuleExpr.NamedTypedModuleEquals  = "and" ModuleName ":" ModuleType "=" ModuleExpr
+  AndModuleType.NamedTypedModule =  "and" ModuleName ":" ModuleType
+  
+  ModuleExpr.ModExprModPath = ModulePath
+  ModuleExpr.Struct = "struct" DoubleSemiColonOpt ModuleItems* "end"
+  ModuleExpr.Struct2 = "struct" Definition+ "end"
+  ModuleExpr.Functor = "functor" "(" ModuleName ":" ModuleType ")" "->" ModuleExpr
+  ModuleExpr = "(" ModuleExpr ")" {bracket}
+  ModuleExpr.ModuleExprAppl = ModuleExpr "(" ModuleExpr ")"
+  ModuleExpr.ModuleExprType = "(" ModuleExpr ":" ModuleType ")"
+  ModuleExpr.ModuleExprVal = "(" "val" Expr  ColonPackageTypeOpt ")"
+  ColonPackageTypeOpt.NoPackageType =
+  ColonPackageTypeOpt.PackageType = ":" PackageType
+  
+  ModuleItems.ModuleItem = DefinitionOrExpr ";;"
+  DoubleSemiColon.DoubleSemiColon = ";;"
+  DoubleSemiColonOpt = 
+  DoubleSemiColonOpt.DoubleSemiColon = ";;"
+  DefinitionOrExpr = Definition
+  DefinitionOrExpr = Expr
+
+context-free priorities
+
+  Definition.Include1 <1> .> ModuleExpr.ModExprModPath  

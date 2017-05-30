@@ -1,0 +1,49 @@
+module pp
+
+imports
+
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/editor/refactoring/-
+  pp/OCaml-parenthesize
+  pp/OCaml-pp
+
+rules
+
+  editor-format:
+    (node, _, ast, path, project-path) -> (filename, result)
+    with
+      ext      := <get-extension> path
+    ; filename := <guarantee-extension(|$[pp.[ext]])> path
+    ; result   := <pp-debug> node
+
+rules
+  
+  pp-OCaml-string =
+    parenthesize-OCaml
+    ; prettyprint-OCaml-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-partial-OCaml-string =
+    parenthesize-OCaml
+    ; prettyprint-OCaml
+    ; !V([], <id>)
+    ; box2text-string(|120)
+    
+  pp-partial-OCaml-string(|sort) =
+    parenthesize-OCaml
+    ; prettyprint-OCaml(|sort)
+    ; !V([], <id>)
+    ; box2text-string(|120)  
+      
+  pp-debug :
+    ast -> result
+    with
+       result := <pp-OCaml-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-OCaml-string); debug(!"cannot pp ")))> ast
+    ;  result := ""
+
+rules
+  
+  construct-textual-change = construct-textual-change(pp-partial-OCaml-string, parenthesize, override-reconstruction, resugar)

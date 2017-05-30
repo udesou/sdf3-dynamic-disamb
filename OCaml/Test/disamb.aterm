@@ -1,0 +1,34 @@
+TopLevel(
+  ()
+, Fun(
+    MultipleMatching(
+      [ PatternParam(
+          PatternTypeExpr(
+            PatternValueName("x")
+          , amb(
+              [ TypeExprAsId(
+                  Star(
+                    Tag("a")
+                  , [AngleBrackets([MethodType("p", Polytype1(Tag("b")))], ())]
+                  )
+                , "c"
+                )
+              , Star(
+                  Tag("a")
+                , [ TypeExprAsId(
+                      AngleBrackets([MethodType("p", Polytype1(Tag("b")))], ())
+                    , "c"
+                    )
+                  ]
+                )
+              ]
+            )
+          )
+        )
+      ]
+    , Hash("x", "m")
+    )
+  )
+, []
+, DoubleSemiColon()
+)

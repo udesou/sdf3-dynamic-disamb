@@ -1,0 +1,74 @@
+module Patterns
+
+imports
+  Names
+  Lexical
+  TypeExpr 
+  Extensions
+  
+context-free syntax
+  
+
+  
+  Pattern.ConstrPattern = Constr Pattern
+  Pattern.TagNamePattern = "`" TagName Pattern
+  Pattern.ListCons       = Pattern "::" Pattern  // TODO: Find out why {right} does not work
+  Pattern.Patterns       = Pattern "," {Pattern ","}+ {nlm, non-assoc}
+  Pattern.PatternBar     = Pattern "|" Pattern {left}
+  Pattern.PatternAs      = Pattern "as" ValueName
+  Pattern.PatternValueName = ValueName
+  Pattern.WildCard        = "_"
+  Pattern.PatternConst   = ConstantNegative
+  Pattern.PatternRange   = CharLiteral ".." CharLiteral
+  Pattern                  = "(" Pattern ")" {bracket}
+  Pattern.PatternTypeExpr  = "(" Pattern ":" TypeExpr ")"
+  Pattern.PatternHash      = "#" TypeConstrName
+  Pattern.PatternRec       = "{" {FieldOrFieldEqPattern ";"}+ "}"
+  Pattern.PatternRec2      = "{" {FieldOrFieldEqPattern ";"}+ ";" "}"
+  Pattern.PatternTuple     = "["  {Pattern ";"}+ ";" "]"
+  Pattern.PatternTuple2    = "["  {Pattern ";"}+ "]"
+  Pattern.PatternArray     = "[|" {Pattern ";"}+ ";" "|]"
+  Pattern.PatternArray2    = "[|" {Pattern ";"}+ "|]"
+  Pattern.LazyPattern      = "lazy" Pattern
+  Pattern.PatternPackage   = "(" "module" ModuleName  ColonPackageTypeOpt ")"  
+  
+  ColonPackageTypeOpt =
+  ColonPackageTypeOpt.PackageType = ":" PackageType
+  FieldOrFieldEqPattern.FieldEqPattern = Field "=" Pattern
+  FieldOrFieldEqPattern.FieldPattern   = Field
+  
+  Constant.PosInt        = PositiveInt
+//  Constant.NegInt        = NegativeInt
+  Constant.FloatLiteral  = PositiveFloat
+  Constant.CharLiteral   = CharLiteral
+  Constant.StringLiteral = StringLiteral
+  Constant.Constr        = Constr
+  Constant.False         = "false"
+  Constant.True          = "true"
+  Constant.EmptyParenthesis = "(" ")"
+  Constant.EmptyBrackets = "[" "]"
+  Constant.EmptyArray = "[|" "|]"
+  Constant.EmptyCurly = "{<" ">}"
+  Constant.TagName = "`" TagName
+  
+  ConstantNegative       = NegativeInt
+  ConstantNegative       = Constant
+  ConstantNegative       = NegativeFloat
+  
+context-free priorities
+  
+  Pattern.ConstrPattern >
+  Pattern.TagNamePattern > 
+  Pattern.ListCons >
+  Pattern.Patterns >
+  Pattern.PatternBar >
+  Pattern.PatternAs 
+   ,
+  Pattern.ListCons right Pattern.ListCons
+  
+context-free priorities
+  {Pattern ","}+ =  {Pattern ","}+ ","  Pattern <2>. > {Pattern.Patterns Pattern.PatternBar Pattern.PatternAs},
+  {Pattern ","}+ = Pattern <0> .> {Pattern.Patterns Pattern.PatternBar Pattern.PatternAs}
+  
+lexical restrictions
+  "_" -/- [A-Za-z0-9\_\']
