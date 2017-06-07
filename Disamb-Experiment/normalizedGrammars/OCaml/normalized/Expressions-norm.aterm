@@ -1850,7 +1850,7 @@ Module(
               , Cf(Iter(Sort("Arg")))
               ]
             )
-          , Attrs([NewLongestMatch(), Assoc(NonAssoc())])
+          , Attrs([Assoc(NonAssoc())])
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("Expr")), Constructor("Lazy"))
@@ -1998,7 +1998,7 @@ Module(
               , Cf(IterSep(Sort("Expr"), Lit("\",\"")))
               ]
             )
-          , Attrs([NewLongestMatch(), Assoc(NonAssoc())])
+          , Attrs([Assoc(NonAssoc())])
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("Expr")), Constructor("Assign"))
@@ -2589,7 +2589,7 @@ Module(
           , Attrs([NewLongestMatch()])
           )
         , SdfProductionWithCons(
-            SortCons(Cf(Sort("PatternMatching")), Constructor("PatternMatching"))
+            SortCons(Cf(Sort("PatternMatching")), Constructor("PatternMatchingWhen"))
           , Rhs(
               [ Cf(Sort("OptBar"))
               , Cf(Opt(Layout()))
@@ -2625,7 +2625,7 @@ Module(
           , NoAttrs()
           )
         , SdfProductionWithCons(
-            SortCons(Cf(Sort("InnerPatternMatching")), Constructor("InnerPatternMatching"))
+            SortCons(Cf(Sort("InnerPatternMatching")), Constructor("InnerPatternMatchingWhen"))
           , Rhs(
               [ Cf(Opt(Sort("SemiColon")))
               , Cf(Opt(Layout()))
@@ -4787,6 +4787,22 @@ Module(
                 , Default(["0"])
                 )
               )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix6")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
             , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix7")))
             ]
           )
@@ -4915,7 +4931,151 @@ Module(
                 , Default(["0"])
                 )
               )
-            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix6")))
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Match")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Function")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("TryBlock")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Fun")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Let")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetRec")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen2")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetException")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleGroup(
+                    SdfProduction(
+                      Cf(Sort("Arg"))
+                    , Rhs([Cf(Sort("Expr"))])
+                    , NoAttrs()
+                    )
+                  )
+                , Default(["0"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetModule")))
             ]
           )
         , Chain(
@@ -5035,6 +5195,16 @@ Module(
                 , Default(["1"])
                 )
               )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix6")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
             , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix7")))
             ]
           )
@@ -5115,7 +5285,97 @@ Module(
                 , Default(["1"])
                 )
               )
-            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix6")))
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Match")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Function")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("TryBlock")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Fun")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Let")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetRec")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen2")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetException")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("LabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetModule")))
             ]
           )
         , Chain(
@@ -5316,6 +5576,106 @@ Module(
                 )
               )
             , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Infix6")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Match")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Function")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("TryBlock")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Fun")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("Let")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetRec")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetOpen2")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetException")))
+            ]
+          )
+        , Chain(
+            [ NonTransitive(
+                WithArguments(
+                  SimpleRefGroup(SortConsRef(Cf(Sort("Arg")), Constructor("OptLabelColon")))
+                , Default(["1"])
+                )
+              )
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Expr")), Constructor("LetModule")))
             ]
           )
         , Assoc(

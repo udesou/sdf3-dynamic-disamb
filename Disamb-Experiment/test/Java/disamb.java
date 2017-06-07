@@ -4,5 +4,10 @@ public class Main {
         else if(true) x = 1; 
         else if(true) x = 1; 
         x = 1 + a -> 2 + 3;
+        !(1 instanceof a || b);
+        1 + (a -> 1) * 2;
+        (1 + a -> 1) * 2;
+        1 * (a -> 1) * 2;
+        (1 * a -> 1) * 2;
     }
 }

@@ -1,0 +1,46 @@
+module normalized/OCaml-norm
+
+imports
+  normalized/Lexical-norm	
+  normalized/Classes-norm	
+  normalized/Expressions-norm	
+  normalized/ModuleExpressions-norm	
+  normalized/ModuleTypes-norm	
+  normalized/Patterns-norm
+
+syntax
+
+  "$Start" = [\36] [\83] [\116] [\97] [\114] [\116] 
+  "$TopLevel" = [\36] [\84] [\111] [\112] [\76] [\101] [\118] [\101] [\108] 
+  "$DefinitionOrExpr" = [\36] [\68] [\101] [\102] [\105] [\110] [\105] [\116] [\105] [\111] [\110] [\79] [\114] [\69] [\120] [\112] [\114] 
+  "$DefinitionOrExprList" = [\36] [\68] [\101] [\102] [\105] [\110] [\105] [\116] [\105] [\111] [\110] [\79] [\114] [\69] [\120] [\112] [\114] [\76] [\105] [\115] [\116] 
+  "$DoubleSemiColonOpt" = [\36] [\68] [\111] [\117] [\98] [\108] [\101] [\83] [\101] [\109] [\105] [\67] [\111] [\108] [\111] [\110] [\79] [\112] [\116] 
+  LAYOUT?-CF = LAYOUT-CF 
+  LAYOUT?-CF =  
+  DefinitionOrExprList+-CF = DefinitionOrExprList-CF 
+  DefinitionOrExprList+-CF = DefinitionOrExprList+-CF LAYOUT?-CF DefinitionOrExprList-CF 
+  DefinitionOrExprList*-CF =  
+  DefinitionOrExprList*-CF = DefinitionOrExprList+-CF 
+  Start-CF = TopLevel-CF 
+  TopLevel-CF.TopLevelEmpty =  
+  TopLevel-CF.TopLevel = DoubleSemiColonOpt-CF LAYOUT?-CF DefinitionOrExpr-CF LAYOUT?-CF DefinitionOrExprList*-CF LAYOUT?-CF DoubleSemiColonOpt-CF 
+  Start-CF.Start-Plhdr = "$Start" {placeholder}
+  TopLevel-CF.TopLevel-Plhdr = "$TopLevel" {placeholder}
+  DefinitionOrExpr-CF.DefinitionOrExpr-Plhdr = "$DefinitionOrExpr" {placeholder}
+  DefinitionOrExprList-CF.DefinitionOrExprList-Plhdr = "$DefinitionOrExprList" {placeholder}
+  DoubleSemiColonOpt-CF.DoubleSemiColonOpt-Plhdr = "$DoubleSemiColonOpt" {placeholder}
+  LAYOUT-CF = LAYOUT-CF LAYOUT-CF {left}
+  <START> = Start 
+  <Start> = <START> [\256] 
+
+restrictions
+
+  "$Start" -/- [[[\65-\90\97-\122]]]
+  "$TopLevel" -/- [[[\65-\90\97-\122]]]
+  "$DefinitionOrExpr" -/- [[[\65-\90\97-\122]]]
+  "$DefinitionOrExprList" -/- [[[\65-\90\97-\122]]]
+  "$DoubleSemiColonOpt" -/- [[[\65-\90\97-\122]]]
+
+priorities
+
+  LAYOUT-CF = LAYOUT-CF LAYOUT-CF  left LAYOUT-CF = LAYOUT-CF LAYOUT-CF 

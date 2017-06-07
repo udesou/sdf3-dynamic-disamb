@@ -1735,7 +1735,7 @@ Module(
               , Cf(Iter(Sort("Arg")))
               ]
             )
-          , Attrs([Assoc(NonAssoc()), NewLongestMatch()])
+          , Attrs([Assoc(NonAssoc())])
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ClassExpr")), Constructor("ClassFun"))

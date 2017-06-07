@@ -962,7 +962,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch()])
+          , NoAttrs()
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ConstrDecl")), Constructor("ConstrDecl1"))
@@ -979,7 +979,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch()])
+          , NoAttrs()
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ConstrDecl")), Constructor("ConstrDecl2"))
@@ -996,7 +996,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch()])
+          , NoAttrs()
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ConstrDecl")), Constructor("ConstrDecl3"))
@@ -1029,7 +1029,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch()])
+          , NoAttrs()
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ConstrDecl")), Constructor("ConstrDecl5"))
@@ -1041,7 +1041,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch()])
+          , NoAttrs()
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("ConstrDecl")), Constructor("ConstrDecl5"))

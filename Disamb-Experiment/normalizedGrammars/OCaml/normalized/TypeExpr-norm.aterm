@@ -775,7 +775,7 @@ Module(
               , Cf(IterSep(Sort("TypeExpr"), Lit("\"*\"")))
               ]
             )
-          , Attrs([NewLongestMatch(), Assoc(NonAssoc())])
+          , Attrs([Assoc(NonAssoc())])
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("TypeExpr")), Constructor("Arrow"))

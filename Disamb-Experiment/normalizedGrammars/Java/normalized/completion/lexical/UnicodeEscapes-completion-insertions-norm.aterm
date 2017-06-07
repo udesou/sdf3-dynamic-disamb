@@ -1,0 +1,72 @@
+Module(
+  Unparameterized("normalized/completion/lexical/UnicodeEscapes-completion-insertions-norm")
+, [Imports([Module(Unparameterized("normalized/lexical/UnicodeEscapes-norm"))])]
+, [ SDFSection(
+      Kernel(
+        [ SdfProduction(
+            Iter(CharClass(Simple(Present(Numeric("\\117")))))
+          , Rhs([CharClass(Simple(Present(Numeric("\\117"))))])
+          , NoAttrs()
+          )
+        , SdfProduction(
+            Iter(CharClass(Simple(Present(Numeric("\\117")))))
+          , Rhs(
+              [ Iter(CharClass(Simple(Present(Numeric("\\117")))))
+              , CharClass(Simple(Present(Numeric("\\117"))))
+              ]
+            )
+          , NoAttrs()
+          )
+        , SdfProduction(
+            IterStar(CharClass(Simple(Present(Numeric("\\117")))))
+          , Rhs([])
+          , NoAttrs()
+          )
+        , SdfProduction(
+            IterStar(CharClass(Simple(Present(Numeric("\\117")))))
+          , Rhs([Iter(CharClass(Simple(Present(Numeric("\\117")))))])
+          , NoAttrs()
+          )
+        , SdfProduction(Lex(Sort("COMPLETION-INSERTION")), Rhs([]), NoAttrs())
+        , SdfProduction(
+            Cf(Sort("COMPLETION-INSERTION"))
+          , Rhs([Lex(Sort("COMPLETION-INSERTION"))])
+          , NoAttrs()
+          )
+        , SdfProduction(
+            Cf(Layout())
+          , Rhs([Cf(Layout()), Cf(Layout())])
+          , Attrs([Assoc(Left())])
+          )
+        , SdfProduction(
+            FileStart()
+          , Rhs([Start(), CharClass(Simple(Present(Numeric("\\256"))))])
+          , NoAttrs()
+          )
+        ]
+      )
+    )
+  , SDFSection(
+      Priorities(
+        [ Assoc(
+            SimpleGroup(
+              SdfProduction(
+                Cf(Layout())
+              , Rhs([Cf(Layout()), Cf(Layout())])
+              , NoAttrs()
+              )
+            )
+          , Left()
+          , SimpleGroup(
+              SdfProduction(
+                Cf(Layout())
+              , Rhs([Cf(Layout()), Cf(Layout())])
+              , NoAttrs()
+              )
+            )
+          )
+        ]
+      )
+    )
+  ]
+)

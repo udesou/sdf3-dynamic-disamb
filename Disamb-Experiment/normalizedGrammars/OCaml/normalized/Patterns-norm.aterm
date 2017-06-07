@@ -886,7 +886,7 @@ Module(
               , Cf(IterSep(Sort("Pattern"), Lit("\",\"")))
               ]
             )
-          , Attrs([NewLongestMatch(), Assoc(NonAssoc())])
+          , Attrs([Assoc(NonAssoc())])
           )
         , SdfProductionWithCons(
             SortCons(Cf(Sort("Pattern")), Constructor("PatternBar"))
@@ -1857,6 +1857,11 @@ Module(
   , SDFSection(
       Priorities(
         [ Chain(
+            [ SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("Exception")))
+            , SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("ConstrPattern")))
+            ]
+          )
+        , Chain(
             [ SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("LazyPattern")))
             , SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("ConstrPattern")))
             ]
@@ -1884,11 +1889,6 @@ Module(
         , Chain(
             [ SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("PatternBar")))
             , SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("PatternAs")))
-            ]
-          )
-        , Chain(
-            [ SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("PatternAs")))
-            , SimpleRefGroup(SortConsRef(Cf(Sort("Pattern")), Constructor("Exception")))
             ]
           )
         , Assoc(
