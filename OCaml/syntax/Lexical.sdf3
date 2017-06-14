@@ -1,5 +1,7 @@
 module Lexical
 
+sorts TopLevel
+
 lexical syntax
   
   Ident = LowerCaseIdent
@@ -17,6 +19,20 @@ lexical syntax
   PositiveInt    = ("0o"| "0O") [0-7] [0-7\_]*
   PositiveInt    = ("0b"| "0B") [0-1] [0-1\_]*
   
+  SpecialInt    = [0-9] [0-9\_]*
+  SpecialInt    = ("0x"| "0X") [0-9A-Fa-f] [0-9A-Fa-f\_]*
+  SpecialInt    = ("0o"| "0O") [0-7] [0-7\_]*
+  SpecialInt    = ("0b"| "0B") [0-1] [0-1\_]*
+  
+  Int32Literal     = SpecialInt [l]
+  Int64Literal     = SpecialInt [L]
+  NativeIntLiteral = SpecialInt [n]
+  
+  NegativeInt32     = "-" Int32Literal
+  NegativeInt64     = "-" Int64Literal
+  NegativeNativeInt = "-" NativeIntLiteral
+  
+  
   NegativeInt    = "-" PositiveInt
   
   PositiveFloat   = [0-9] [0-9\_]* [eE] [\+\-]? [0-9] [0-9\_]*
@@ -31,7 +47,7 @@ lexical syntax
   
   CharLiteral    = [\'] (RegularChar | EscapeSequence) [\']
   
-  EscapeSequence = ([\\] [\\\"\'ntbr])
+  EscapeSequence = ([\\] [\\\"\'ntbr\ ])
   EscapeSequence = ([\\] [0-9][0-9][0-9])
   EscapeSequence = ([\\][x] [0-9A-Fa-f][0-9A-Fa-f])
   
@@ -39,11 +55,11 @@ lexical syntax
   StringChar     = RegularCharStr
   StringChar     = EscapeSequence
   StringChar     = [\\][\n]
-  StringChar     = [\\][\ ]
   RegularChar    = ~[\'\\]
   RegularCharStr = ~[\"\\]
   
-  OperatorCharList = ("!" | "$" | "%" | "&" | "*" | "+" |  "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "|" | "~" | "^")+
+  OperatorCharList = (HashInfixSymbol | "!" | "$" | "%" | "&" | "*" | "+" |  "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "|" | "~" | "^")+
+  
   
   OperatorChar  = "!" | "$" | "%" | "&" | "*" | "+" |  "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "|" | "~" | "^"
   PrefixSymbol  = "!" OperatorChar*
@@ -54,14 +70,19 @@ lexical syntax
   OptLabel      = "?" LowerCaseIdent
   OptLabelColon = "?" LowerCaseIdent ":"
   
+  
+  
   InfixSymbol1  = "lsl" | "lsr" | "asr" | "**" OperatorChar* 
   InfixSymbol2  = "mod" | "land"| "lor" | "lxor" | ("/" | "%" | "*") OperatorChar*
   InfixSymbol3  = ("+" | "-") OperatorChar*
   InfixSymbol4  = ("@" | "^") OperatorChar*
   InfixSymbol5  = ("=" | "<" | ">" | "|" | "&" | "$") OperatorChar*
-  InfixSymbol6  =  "&" | "&&"
+  InfixSymbol6  =  AND | "&&"
   InfixSymbol7  =  "||" | "or"
   InfixSymbol8  =  ":="
+  
+  HashInfixSymbol = "#" OperatorChar+
+  AND = "&"
   
   
   InfixSymbol1 = ")" {reject}
@@ -209,24 +230,68 @@ lexical syntax
 //  LowerCaseIdent = Keyword {reject}
 //  CapitalizedIdent = Keyword {reject}
 
-        
-  Comment = "(*" (~[\*] | Comment | Star)* "*)"
+  // Due to lexical ambiguities cannot forbid comment chars to appear inside String Literals      
+  // Hack parse just these two cases:
+  // "(*" and "(**"
+  Comment = "(*" (~[\(\*] | Comment | Star | OpenParenthesis | CommentLiteral)* "*)"
+  CommentLiteral = [\"] ("(*" | "(**") [\"]  
+  OpenParenthesis = "("
   Star = "*"
   LAYOUT = Comment
   LAYOUT = [\ \t\n\r]
+  NoLineNumDirectiveLayout = (Comment | [\ \t])*
+  
+ 
+syntax
+  // How to implement this correctly?
+  LineNumDirective-LEX = "\n" "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX  "\"" StringChar*-LEX "\"" NoLineNumDirectiveLayout-LEX LineNumDirective-LEX
+  LineNumDirective-LEX = "\n" "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX LineNumDirective-LEX
+  LineNumDirective-LEX = "\n" "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX  "\"" StringChar*-LEX "\"" NoLineNumDirectiveLayout-LEX "\n"
+  LineNumDirective-LEX = "\n" "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX "\n"
+  LAYOUT-LEX = LineNumDirective-LEX
+  
+  Start = InitialDirective? LAYOUT?-CF TopLevel-CF LAYOUT?-CF FinalDirective? {ast("<2>")}
+  Start = "#" NoLineNumDirectiveLayout-LEX [0-9]+ {ast("TopLevelEmpty()")}
+  Start = "#" NoLineNumDirectiveLayout-LEX [0-9]+ "\"" StringChar*-LEX "\"" {ast("TopLevelEmpty()")}
+//  Start =  LAYOUT?-CF TopLevel-CF LAYOUT?-CF  {ast("<1>")}
+  
+  InitialDirective = "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX "\n" InitialDirective?
+  InitialDirective = "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX "\"" StringChar*-LEX "\"" "\n" InitialDirective?
+  
+  FinalDirective   = "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX 
+  FinalDirective   = "#" NoLineNumDirectiveLayout-LEX [0-9]+ NoLineNumDirectiveLayout-LEX "\"" StringChar*-LEX "\""
+ //  LineNum          =  "#" [0-9]+ 
+//  
+//  LAYOUT = LineNumDirective  
 
   
 lexical restrictions
-
+  InitialDirective -/- [\"]
+//  LineNumDirective -/- [\(].[\*]
+  NoLineNumDirectiveLayout -/- [\ \t]
+  NoLineNumDirectiveLayout -/- [\(].[\*]
+  
+//  LineNum -/- [\"]
+//  LineNum -/- [\ ].[\"]
+  OpenParenthesis -/- [\*]
   Star -/- [\)]
   LowerCaseIdent -/- [A-Za-z0-9\_\']
   CapitalizedIdent -/- [A-Za-z0-9\_\']
-  IntegerLiteral -/- [0-9A-Fa-fxobXOB\_]
-  PositiveInt -/- [0-9A-Fa-fxobXOB\_]
+  IntegerLiteral -/- [0-9A-Fa-fxobXOB\_\.eE]
+  PositiveInt -/- [0-9A-Fa-fxobXOB\_\.eElLn]
+  SpecialInt -/- [0-9\_A-Fa-f\.eExobXOB]
   PositiveFloat FloatLiteral -/- [0-9\_\.eE\-]
-  OperatorChar -/- [\!\$\%\&\*\+\-\.\/\:\<\>\?\@\^\|\~]
+  InfixSymbol1 
+  InfixSymbol2
+  InfixSymbol3
+  InfixSymbol4
+  InfixSymbol5
+  -/- [\!\$\%\&\*\+\-\.\/\:\<\>\?\@\^\|\~]
+  HashInfixSymbol
+   -/- [\!\$\%\&\*\+\-\.\/\:\<\>\?\@\^\|\~\#]
   Label OptLabel -/- [\:]
   PrefixSymbol -/- [\!\$\%\&\*\+\-\.\/\:\<\>\?\@\^\|\~]
+  AND -/- [\&]
   
   "and"  "as"  "assert" "asr" "begin" "class" "constraint" "do" "done" 
   "downto" "else" "end" "exception" "external" "false" "for" "fun" "function"
@@ -249,4 +314,5 @@ context-free restrictions
   
   LAYOUT? -/- [\ \t\n\r]
   LAYOUT? -/- [\(].[\*]
+//  LAYOUT? -/- [\#].[0-9]
   

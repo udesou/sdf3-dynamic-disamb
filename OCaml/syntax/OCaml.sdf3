@@ -8,17 +8,20 @@ imports
   ModuleTypes
   Patterns
 
-context-free start-symbols
+syntax start-symbols
 
   Start
   
-context-free syntax
+syntax
 
 //  Start = Interface
 //  Start = Implementation
-  Start = TopLevel  
+//  Start = LAYOUT?-CF TopLevel-CF LAYOUT?-CF  
 //    Start = Pattern
-  
+
+syntax
+
+    
 context-free syntax
   
 //  Interface.Interface = <<SpecificationAux*>>
@@ -40,11 +43,9 @@ context-free syntax
   
   TopLevel.TopLevelEmpty =  
   TopLevel.TopLevel = DoubleSemiColonOpt DefinitionOrExpr DefinitionOrExprList* DoubleSemiColonOpt
-  DefinitionOrExpr  = Definition 
-  DefinitionOrExpr  = Expr 
   
-  DefinitionOrExprList.Def1 = ";;" Definition
-  DefinitionOrExprList.Def2 = Definition      
-  DefinitionOrExprList.Expr = ";;" Expr
+//  DefinitionOrExprList.Def1 = ";;" Definition
+//  DefinitionOrExprList.Def2 = Definition      
+//  DefinitionOrExprList.Expr = ";;" Expr
   
 //  DefinitionOrExpr.Expr2 = Expr 

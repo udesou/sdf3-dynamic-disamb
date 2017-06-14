@@ -1,0 +1,27 @@
+TopLevel(
+  ()
+, Expr(
+    IfThenElse(
+      Infix5("sign", "<", Constant(PosInt("0")))
+    , Infix8(
+        "buffer"
+      , ":="
+      , Infix4(Prefix("!", "buffer"), "^", Constant(StringLiteral("\"-\"")))
+      )
+    , None()
+    , IfThenElse(
+        Infix5("signstyle", "<>", Constant(StringLiteral("\"-\"")))
+      , Infix8(
+          "buffer"
+        , ":="
+        , Infix4(Prefix("!", "buffer"), "^", "signstyle")
+        )
+      , None()
+      , Constant(EmptyParenthesis())
+      )
+    )
+  , Some(";")
+  )
+, []
+, ()
+)

@@ -1,33 +1,13 @@
 TopLevel(
   ()
-, Fun(
-    MultipleMatching(
-      [ PatternParam(
-          PatternTypeExpr(
-            PatternValueName("x")
-          , amb(
-              [ TypeExprAsId(
-                  Star(
-                    Tag("a")
-                  , [AngleBrackets([MethodType("p", Polytype1(Tag("b")))], ())]
-                  )
-                , "c"
-                )
-              , Star(
-                  Tag("a")
-                , [ TypeExprAsId(
-                      AngleBrackets([MethodType("p", Polytype1(Tag("b")))], ())
-                    , "c"
-                    )
-                  ]
-                )
-              ]
-            )
-          )
-        )
-      ]
-    , Hash("x", "m")
+, Expr(
+    IfThenElse(
+      Constant(PosInt("1"))
+    , IfThen(Constant(PosInt("3")), Constant(PosInt("4")))
+    , None()
+    , Constant(PosInt("5"))
     )
+  , None()
   )
 , []
 , DoubleSemiColon()

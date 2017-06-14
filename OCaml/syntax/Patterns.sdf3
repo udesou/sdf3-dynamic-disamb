@@ -13,7 +13,7 @@ context-free syntax
   Pattern.ConstrPattern = Constr Pattern
   Pattern.TagNamePattern = "`" TagName Pattern
   Pattern.ListCons       = Pattern "::" Pattern  // TODO: Find out why {right} does not work
-  Pattern.Patterns       = Pattern "," {Pattern ","}+ {nlm, non-assoc}
+  Pattern.Patterns       = Pattern "," {Pattern ","}+ {non-assoc}
   Pattern.PatternBar     = Pattern "|" Pattern {left}
   Pattern.PatternAs      = Pattern "as" ValueName
   Pattern.PatternValueName = ValueName
@@ -22,15 +22,19 @@ context-free syntax
   Pattern.PatternRange   = CharLiteral ".." CharLiteral
   Pattern                  = "(" Pattern ")" {bracket}
   Pattern.PatternTypeExpr  = "(" Pattern ":" TypeExpr ")"
-  Pattern.PatternHash      = "#" TypeConstrName
-  Pattern.PatternRec       = "{" {FieldOrFieldEqPattern ";"}+ "}"
-  Pattern.PatternRec2      = "{" {FieldOrFieldEqPattern ";"}+ ";" "}"
+  Pattern.PatternHash      = "#" TypeConstr
+  Pattern.PatternRec       = "{" {FieldOrFieldEqPattern ";"}+ SemiColonUnderscore? "}"
+  Pattern.PatternRec2      = "{" {FieldOrFieldEqPattern ";"}+ SemiColonUnderscore? ";" "}"
   Pattern.PatternTuple     = "["  {Pattern ";"}+ ";" "]"
   Pattern.PatternTuple2    = "["  {Pattern ";"}+ "]"
   Pattern.PatternArray     = "[|" {Pattern ";"}+ ";" "|]"
   Pattern.PatternArray2    = "[|" {Pattern ";"}+ "|]"
   Pattern.LazyPattern      = "lazy" Pattern
   Pattern.PatternPackage   = "(" "module" ModuleName  ColonPackageTypeOpt ")"  
+  // extension local opens
+  Pattern.ModulePath       = ModulePath ".(" Pattern ")"
+  
+  Pattern.Exception = "exception" Pattern  
   
   ColonPackageTypeOpt =
   ColonPackageTypeOpt.PackageType = ":" PackageType
@@ -38,6 +42,9 @@ context-free syntax
   FieldOrFieldEqPattern.FieldPattern   = Field
   
   Constant.PosInt        = PositiveInt
+  Constant.Int32         = Int32Literal
+  Constant.Int64         = Int64Literal
+  Constant.NativeInt     = NativeIntLiteral
 //  Constant.NegInt        = NegativeInt
   Constant.FloatLiteral  = PositiveFloat
   Constant.CharLiteral   = CharLiteral
@@ -52,18 +59,26 @@ context-free syntax
   Constant.TagName = "`" TagName
   
   ConstantNegative       = NegativeInt
+  ConstantNegative       = NegativeInt32
+  ConstantNegative       = NegativeInt64
+  ConstantNegative       = NegativeNativeInt  
   ConstantNegative       = Constant
   ConstantNegative       = NegativeFloat
+
+context-free syntax
+  
+  SemiColonUnderscore.SemiColonUnderscore = ";" "_"
   
 context-free priorities
   
+  
+  { Pattern.Exception Pattern.LazyPattern } >
   Pattern.ConstrPattern >
   Pattern.TagNamePattern > 
   Pattern.ListCons >
   Pattern.Patterns >
   Pattern.PatternBar >
-  Pattern.PatternAs 
-   ,
+  Pattern.PatternAs ,
   Pattern.ListCons right Pattern.ListCons
   
 context-free priorities

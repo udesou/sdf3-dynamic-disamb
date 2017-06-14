@@ -13,6 +13,7 @@ imports
 context-free syntax
   
   TypeDefinition.TypeDefinition = "type" {TypeDef "and"}+
+  TypeDefinition.TypeDefinitionNonRec = "type" "nonrec" {TypeDef "and"}+
   TypeDef.TypeDef = TypeParams? TypeConstrName TypeInformation
   TypeInformation.TypeInformation = TypeEquation? TypeRepresentation? TypeConstraint*
   TypeEquation.TypeEquation = "=" TypeExpr
@@ -27,10 +28,21 @@ context-free syntax
   Variance.PosVariance = "+"
   Variance.NegVariance = "-"
   
-  ConstrDecl.ConstrDecl1 = ConstrName "of" {TypeExpr "*"}+ {nlm}
+  ConstrDecl.ConstrDecl1 = ConstrName "of" {TypeExpr "*"}+ 
   ConstrDecl.ConstrDecl1 = ConstrName
-  ConstrDecl.ConstrDecl2 = ConstrName ":" {TypeExpr "*"}+ "->" TypeExpr
-  ConstrDecl.ConstrDecl2 = ConstrName ":" {TypeExpr "*"}+ {nlm}
+  
+  ConstrDecl.ConstrDecl2 = "[]" "of" {TypeExpr "*"}+ 
+  ConstrDecl.ConstrDecl2 = "[]"
+  
+  ConstrDecl.ConstrDecl3 = "(::)" "of" {TypeExpr "*"}+ 
+  ConstrDecl.ConstrDecl3 = "(::)"
+  
+  
+  ConstrDecl.ConstrDecl4 = ConstrName ":" {TypeExpr "*"}+ "->" TypeExpr
+  ConstrDecl.ConstrDecl4 = ConstrName ":" {TypeExpr "*"}+ 
+  
+  ConstrDecl.ConstrDecl5 = "()" "of" {TypeExpr "*"}+ 
+  ConstrDecl.ConstrDecl5 = "()"
   
   FieldDecl.FieldDecl = Mutable? FieldName ":" PolyTypeExpr
   

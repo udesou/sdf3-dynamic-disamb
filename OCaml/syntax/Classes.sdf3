@@ -6,6 +6,7 @@ imports
   TypeExpr
   Patterns
   Expressions
+  ModuleExpressions
   
 context-free syntax
   
@@ -32,10 +33,10 @@ context-free syntax
   ClassExpr.TEClassPath = "[" {TypeExpr ","}+ "]" ClassPath
   ClassExpr             = "(" ClassExpr ")" {bracket}
   ClassExpr.ClassExprCT = "(" ClassExpr ":" ClassType ")"
-  ClassExpr.ClassArgs   = ClassExpr Arg+ {non-assoc, nlm}
+  ClassExpr.ClassArgs   = ClassExpr Arg+ {non-assoc}
   ClassExpr.ClassFun    = "fun" Parameter+ "->" ClassExpr
-  ClassExpr.LetClass    = "let" {LetBinding "and"}+ "in" ClassExpr
-  ClassExpr.LetRecClass = "let" "rec" {LetBinding "and"}+ "in" ClassExpr
+  ClassExpr.LetClass    = "let" LetBinding AndLetBinding* "in" ClassExpr
+  ClassExpr.LetRecClass = "let" "rec" LetBinding AndLetBinding* "in" ClassExpr
   ClassExpr.Object      = "object" ClassBody "end"
   
   ClassField.Inheritance     = Inherit ClassExpr AsOption
@@ -66,9 +67,11 @@ context-free syntax
   Virtual.Virtual = "virtual"
   
   ClassDefinition.ClassDefinition = "class" {ClassBinding "and"}+
-  ClassBody.ClassBody             = ClassField*
-  ClassBody.ClassBody             = "(" Pattern ")" ClassField*
-  ClassBody.ClassBody             = "(" Pattern ":" TypeExpr ")" ClassField*
+  ClassBody.ClassBody             = ClassFieldOptSemiColon*
+  ClassBody.ClassBody             = "(" Pattern ")" ClassFieldOptSemiColon*
+  ClassBody.ClassBody             = "(" Pattern ":" TypeExpr ")" ClassFieldOptSemiColon*
+  
+  ClassFieldOptSemiColon.ClassField = ClassField SemiColon?
   
   ClassBinding.ClassBinding     = Virtual? OptTypeParameters ClassName Parameter* ColonClassTypeOpt "=" ClassExpr
   ColonClassTypeOpt.NoClassType = 

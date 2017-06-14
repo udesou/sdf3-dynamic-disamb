@@ -14,11 +14,14 @@ context-free syntax
   
   Expr.Prefix = PrefixSymbol Expr
   Expr.Field  = Expr "." Ident 
-  Expr.DotBracket1 = Expr "." "(" Expr ")"
-  Expr.DotBracket2 = Expr "." "[" Expr "]"
-  Expr.DotBracket3 = Expr "." "{" Expr "}"
-  Expr.Hash        = Expr "#" MethodName
-  Expr.FunctionApp = Expr   Arg+ {nlm, non-assoc}
+  Expr.ValuePath1   = Expr "." "(" OperatorCharList ")"
+  Expr.ValuePath2   = Expr "." "(" Operations ")"
+  Expr.DotBracket1 = Expr "." "(" Expr SemiColon? ")"
+  Expr.DotBracket2 = Expr "." "[" Expr SemiColon? "]"
+  Expr.DotBracket3 = Expr "." "{" Expr SemiColon? "}"
+  Expr.HashMethod  = Expr "#" MethodName
+  Expr.HashInfix   = Expr HashInfixSymbol Expr {left}
+  Expr.FunctionApp = Expr   Arg+ {non-assoc}
 //  Expr.ConstrExp   = Constr Expr
 //  Expr.PolyVariant = "`" TagName Expr
   Expr.Lazy        = "lazy" Expr
@@ -35,25 +38,30 @@ context-free syntax
   Expr.Infix6      = Expr InfixSymbol6 Expr {right}
   Expr.Infix7      = Expr InfixSymbol7 Expr {right}
   Expr.Comma       = Expr "," {Expr ","}+ {non-assoc}
-  Expr.Assign1     = Expr "." Field "<-" Expr {right}
-  Expr.Assign2     = Expr "." "(" Expr ")" "<-" Expr {right}
-  Expr.Assign3     = Expr "." "[" Expr "]" "<-" Expr {right}
-  Expr.Assign4     = Expr "." "{" Expr "}" "<-" Expr {right}
-  Expr.Assign5     = InstVarName "<-" Expr
+  Expr.Assign      = Expr "<-" Expr {right}
+//  Expr.Assign2     = Expr "." "(" Expr ")" "<-" Expr {right}
+//  Expr.Assign3     = Expr "." "[" Expr "]" "<-" Expr {right}
+//  Expr.Assign4     = Expr "." "{" Expr "}" "<-" Expr {right}
+//  Expr.Assign5     = InstVarName "<-" Expr
   Expr.Infix8      = Expr InfixSymbol8 Expr {right}
-  Expr.IfThenElse  = "if" Expr "then" Expr "else" Expr
+  // not so sure about the optional semicolon there
+  Expr.IfThenElse  = "if" Expr "then" Expr SemiColon? "else" Expr
   Expr.IfThen      = "if" Expr "then" Expr
-  Expr.SemiColon   = Expr ";"
+//  Expr.SemiColon   = Expr ";"
   Expr.Sep         = Expr ";" Expr {right}
-  Expr.Match       = "match" Expr "with" PatternMatching
-  Expr.Function    = "function" PatternMatching
-  Expr.Fun         = "fun" MultipleMatching
-  Expr.TryBlock    = "try" Expr "with" PatternMatching
-  Expr.Let         = "let" {LetBinding "and"}+ "in" Expr
-  Expr.LetRec      = "let" "rec" {LetBinding "and"}+ "in" Expr
-  Expr.LetModule   = "let" "module" ModuleName "=" ModuleExpr "in" Expr
+  // 7.18 INFIX SYNTAX FOR ATTRIBUTES
+  
+  Expr.Match       = "match" Attribute? Expr SemiColon? "with" PatternMatching
+  Expr.Function    = "function" Attribute? PatternMatching
+  Expr.Fun         = "fun" Attribute? MultipleMatching
+  Expr.TryBlock    = "try" Attribute? Expr SemiColon? "with" PatternMatching
+  Expr.Let         = "let"  Attribute? LetBinding SemiColon? AndLetBindingSemiColon* "in" Expr
+  Expr.LetRec      = "let" "rec"  Attribute? LetBinding SemiColon? AndLetBindingSemiColon* "in" Expr
+  Expr.LetModule   = "let" "module" Attribute? ModuleName "=" ModuleExpr "in" Expr
   Expr             = "(" Expr ")" {bracket}
+  Expr.Bracket     = "(" Expr ";" ")"
   Expr             = "begin" Expr "end" {bracket}
+  Expr.Bracket2    = "begin" Expr ";" "end"
   Expr.Brackets1   = "(" Expr ":" TypeExpr ")"
   Expr.Brackets2   = "(" Expr ":>" TypeExpr ")"
   Expr.Brackets3   = "(" Expr ":" TypeExpr ":>" TypeExpr ")"
@@ -62,18 +70,25 @@ context-free syntax
   Expr.Tuple       = "[" {Expr ";"}+ SemiColon? "]"
   Expr.Array       = "[|" {Expr ";"}+ SemiColon? "|]"
   Expr.Record1     = "{" {FieldAssign ";"}+ SemiColon? "}"
-  FieldAssign.FieldAssign = Field "=" Expr
-  FieldAssign.Field = Field
   Expr.Record2     = "{" Expr "with" {FieldAssign ";"}+ SemiColon? "}"
-  Expr.While       = "while" Expr "do" Expr "done"
-  Expr.For         = "for" Ident "=" Expr ToDownTo Expr "do" Expr "done"
+  Expr.While       = "while" Expr "do" Expr SemiColon? "done"
+  Expr.For         = "for" Ident "=" Expr ToDownTo Expr "do" Expr SemiColon? "done"
   Expr.New         = "new" ClassPath
   Expr.Object      = "object" ClassBody "end"
   Expr.ModuleExpr  = "(" "module" ModuleExpr ColonPackageTypeOpt ")"
-//  Expr.ValuePath   = ValuePath
+  // Expr.ValuePath   = ValuePath  ambiguous with Field
   Expr             = ValueName
   Expr.Constant    = Constant
   Expr             = ConstrName
+  // extension 7.6 Local Opens
+  Expr.LetOpen         =  "let" "open" ModulePath "in" Expr  
+  // extension 7.15 Overriding in open statements
+  Expr.LetOpen2         =  "let" "open!" ModulePath "in" Expr  
+  // extension 7.26 Local exceptions
+  Expr.LetException    = "let" "exception" ConstrDecl "in" Expr
+  
+  FieldAssign.FieldAssign  = Field "=" Expr
+  FieldAssign.Field        = Field
   
   Arg               = Expr 
   Arg.Label         = Label
@@ -82,14 +97,17 @@ context-free syntax
   Arg.OptLabelColon = OptLabelColon Expr
   
   PatternMatching.PatternMatching = OptBar Pattern "->" Expr InnerPatternMatching* {nlm}
-  PatternMatching.PatternMatching = OptBar Pattern "when" Expr "->" Expr InnerPatternMatching* {nlm}
-  InnerPatternMatching.InnerPatternMatching = "|" Pattern "->" Expr
-  InnerPatternMatching.InnerPatternMatching = "|" Pattern "when" Expr "->" Expr
+  PatternMatching.PatternMatchingWhen = OptBar Pattern "when" Expr "->" Expr InnerPatternMatching* {nlm}
+  InnerPatternMatching.InnerPatternMatching = SemiColon? "|" Pattern "->" Expr
+  InnerPatternMatching.InnerPatternMatchingWhen = SemiColon? "|" Pattern "when" Expr "->" Expr
   
-  LetBinding.LetBinding     = Pattern Parameter* "=" Expr
-  LetBinding.LetBinding1    = Pattern Parameter* ":" PolyTypeExpr ":>" TypeExpr "=" Expr
-  LetBinding.LetBinding2    = Pattern Parameter* ":" PolyTypeExpr "=" Expr
-  LetBinding.LetBinding3    = Pattern Parameter* ":>" TypeExpr  "=" Expr
+  AndLetBindingSemiColon.LetBinding = "and" Attribute? LetBinding SemiColon?
+  
+  LetBinding.LetBinding     = Pattern "=" Expr
+  LetBinding.LetBinding1    = ValueName Parameter* "=" Expr
+  LetBinding.LetBinding1    = ValueName Parameter* ":" PolyTypeExpr ":>" TypeExpr "=" Expr
+  LetBinding.LetBinding2    = ValueName Parameter* ":" PolyTypeExpr "=" Expr
+  LetBinding.LetBinding3    = ValueName Parameter* ":>" TypeExpr  "=" Expr
   LetBinding.BindingNew     = ValueName ":" "type" TypeConstr* "." TypeExpr "=" Expr
   
   MultipleMatching.MultipleMatching = Parameter+ "->" Expr
@@ -104,19 +122,23 @@ context-free syntax
   Parameter.Param5          = "?" "(" LabelName ColonTypeExprOpt ")"
   Parameter.Param5          = "?" "(" LabelName ColonTypeExprOpt "=" Expr ")"
   Parameter.Param6          = OptLabelColon Pattern
-  Parameter.Param7          = OptLabelColon "(" Pattern ColonTypeExprOpt ")"
-  Parameter.Param7          = OptLabelColon "(" Pattern ColonTypeExprOpt "=" Expr ")"
+  Parameter.Param7          = OptLabelColon "(" Pattern ":" TypeExpr "=" Expr ")"
   Parameter.TypeParam       = "(" "type" TypeConstrName ")"
   
-
+  // TODO fix the SDF3 PT generator to find productions in other modules
+  Expr.ExprAttr             = Expr Attribute
+  
 context-free priorities
     Expr.Prefix >
   { Expr.Field
+    Expr.ValuePath1
+    Expr.ValuePath2
     Expr.DotBracket1
     Expr.DotBracket2
     Expr.DotBracket3
   } >
-    Expr.Hash >
+    Expr.HashMethod > 
+    Expr.HashInfix >
   { non-assoc: Expr.FunctionApp
 //    Expr.ConstrExp
 //    Expr.PolyVariant
@@ -136,16 +158,11 @@ context-free priorities
     Expr.Infix6 >
     Expr.Infix7 >
     Expr.Comma >
-  { right: Expr.Assign1
-    Expr.Assign2
-    Expr.Assign3
-    Expr.Assign4
-    Expr.Assign5
-  } > 
+    Expr.Assign > 
     Expr.Infix8 >
     Expr.IfThenElse > 
     Expr.IfThen >
-    Expr.SemiColon > 
+    Expr.ExprAttr >
     Expr.Sep > 
   { Expr.Match 
     Expr.Function 
@@ -153,23 +170,34 @@ context-free priorities
     Expr.Fun
     Expr.Let
     Expr.LetRec
+    Expr.LetOpen
+    Expr.LetOpen2 
+    Expr.LetException
     Expr.LetModule
    },
    
   //tree filtering from Rascal Grammar  
-  {Expr ","}+ = {Expr ","}+ "," Expr .> {Expr.SemiColon Expr.Comma Expr.Sep},
-  {Expr ","}+ = Expr .> {Expr.SemiColon Expr.Comma Expr.Sep},
-  {Expr ";"}+ = {Expr ";"}+ ";" Expr <2> . > {Expr.SemiColon Expr.Sep},
-  {Expr ";"}+ = Expr <0>.> {Expr.SemiColon Expr.Sep},  
-  Expr.FunctionApp <0>.> {Expr.SemiColon},
-  FieldAssign.FieldAssign <2> .> {Expr.SemiColon Expr.Sep},
+  {Expr ","}+ = {Expr ","}+ "," Expr <2> .> { Expr.Comma Expr.Sep},
+  {Expr ","}+ = Expr <0> .> { Expr.Comma Expr.Sep},
+  {Expr ","}+ = {Expr ","}+ "," Expr > Expr.Assign,
+  {Expr ","}+ = Expr > Expr.Assign,
+  {Expr ";"}+ = {Expr ";"}+ ";" Expr <2> . > { Expr.Sep},
+  {Expr ";"}+ = Expr <0>.> { Expr.Sep},
+    
+  {Expr ";"}+ = {Expr ";"}+ ";" Expr > Expr.Let,
+  {Expr ";"}+ = Expr > Expr.Let,
+  
+  Expr.FunctionApp <0>.> {Expr.Comma},
+  FieldAssign.FieldAssign <2> .> {Expr.Sep},
   Expr.Constant <0> .> Constant.Constr,
-  Expr.Infix3 <0> .> Expr.SemiColon,
   Parameter.PatternParam  <0> .> Pattern.ConstrPattern,
-  AssignInstVarName.Assign <2> .> {Expr.SemiColon Expr.Sep},
+  AssignInstVarName.Assign <2> .> {Expr.Sep},
+  LetBinding.LetBinding <0> .> Pattern.PatternValueName,
+  Expr.IfThenElse <3> .> Expr.Sep,
   
   Arg = Expr <0> .> 
   { Expr.FunctionApp
+    Expr.ExprAttr
     Expr.Lazy
     Expr.Assert
     Expr.UnaryMinus  
@@ -183,17 +211,27 @@ context-free priorities
     Expr.Infix7    
     Expr.Infix8
     Expr.Uneq
+    Expr.Match
     Expr.IfThenElse
     Expr.IfThen
     Expr.Sep
     Expr.ColonColon
-    Expr.SemiColon
     Expr.Comma
-    Expr.Infix6
+    Expr.Match 
+    Expr.Function 
+    Expr.TryBlock
+    Expr.Fun
+    Expr.Let
+    Expr.LetRec
+    Expr.LetOpen
+    Expr.LetOpen2 
+    Expr.LetException
+    Expr.LetModule
   },
   
   Arg.LabelColon <1> .> 
   { Expr.FunctionApp
+    Expr.ExprAttr
     Expr.Lazy
     Expr.Assert
     Expr.UnaryMinus  
@@ -211,12 +249,21 @@ context-free priorities
     Expr.IfThen
     Expr.Sep
     Expr.ColonColon
-    Expr.SemiColon
     Expr.Comma
-    Expr.Infix6
+    Expr.Match 
+    Expr.Function 
+    Expr.TryBlock
+    Expr.Fun
+    Expr.Let
+    Expr.LetRec
+    Expr.LetOpen
+    Expr.LetOpen2 
+    Expr.LetException
+    Expr.LetModule
   },
   Arg.OptLabelColon <1> .> 
   { Expr.FunctionApp
+    Expr.ExprAttr
     Expr.Lazy
     Expr.Assert
     Expr.UnaryMinus  
@@ -234,10 +281,29 @@ context-free priorities
     Expr.IfThen
     Expr.Sep
     Expr.ColonColon
-    Expr.SemiColon
     Expr.Comma
     Expr.Infix6
+    Expr.Match 
+    Expr.Function 
+    Expr.TryBlock
+    Expr.Fun
+    Expr.Let
+    Expr.LetRec
+    Expr.LetOpen
+    Expr.LetOpen2 
+    Expr.LetException
+    Expr.LetModule
   }
+  
+//  Expr.ExprAttr <0> .>
+//  { Expr.Match 
+//    Expr.Function 
+//    Expr.TryBlock
+//    Expr.Fun
+//    Expr.Let
+//    Expr.LetRec
+//    Expr.LetModule
+//   }  
   
 lexical syntax
 
