@@ -1,3 +1,0 @@
-Ambiguity 1: 
-(Callable<Iterable<File>>) () -> this.providedClasspath == null
-								? Collections.emptyList() : this.providedClasspath

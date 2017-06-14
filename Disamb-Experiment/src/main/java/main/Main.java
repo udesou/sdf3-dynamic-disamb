@@ -69,8 +69,8 @@ public class Main {
     private static Logger debugLogger = LoggerFactory.getLogger(Main.class);
     private static org.apache.log4j.Logger resultLogger = org.apache.log4j.Logger.getLogger("reportsLogger");
     private static org.apache.log4j.Logger JAVAresultLogger = org.apache.log4j.Logger.getLogger("JAVAreportsLogger");
-    private final static boolean JAVA = false;
-    private final static boolean OCAML = true;
+    private final static boolean JAVA = true;
+    private final static boolean OCAML = false;
     private final static boolean TESTING = true;
     private final static boolean TABLECREATION = false;
     private final static String testingFile = "disamb.ml";
@@ -126,7 +126,7 @@ public class Main {
         debugLogger.info("Creating the list of all Java Files:");
         File oCamlDir = new File("test/Java/");
         Collection<File> javaFiles = FileUtils.listFiles(oCamlDir, new String[] { "java" }, true);
-        debugLogger.info("{} files created.", javaFiles.size());
+        debugLogger.info("{} files created.", javaFiles.size()-1);
         debugLogger.info("-------------------------------------");
 
         final TermTreeFactory factory = new TermTreeFactory(new ParentTermFactory(tf));
@@ -206,7 +206,7 @@ public class Main {
             }
 
             // FIXME the files below cause a stack overflow when imploding
-            if(checkProblematicFiles(f)) {
+            if(checkProblematicFiles(f, debugLogger, JAVAresultLogger)) {
                 probfilesLogger.info(f.getAbsolutePath());
                 continue;
             }
@@ -334,17 +334,19 @@ public class Main {
             }
 
             if(opStyleAmbs != 0) {
-                opStyleUniqueAmbs = collectAmbs(noOperatorAmbAst).size(); //(f, noOperatorAmbAst, "operator-style");
+                opStyleUniqueAmbs = collectAmbs(noOperatorAmbAst).size(); // (f, noOperatorAmbAst, "operator-style");
                 opStyleTopLevelAmbs = exportAmbiguities(f, noOperatorAmbAst, "operator-style");
             }
 
             if(danglingElseAmbs != 0) {
-                danglingElseUniqueAmbs = collectAmbs(noDanglingElseAst).size();//exportAmbiguities(f, noDanglingElseAst, "dangling-else");
+                danglingElseUniqueAmbs = collectAmbs(noDanglingElseAst).size();// exportAmbiguities(f,
+                                                                               // noDanglingElseAst, "dangling-else");
                 danglingElseTopLevelAmbs = exportAmbiguities(f, noDanglingElseAst, "dangling-else");
             }
 
             if(longestMatchAmbs != 0) {
-                longestMatchUniqueAmbs = collectAmbs(noLongestMatchAst).size();//exportAmbiguities(f, noLongestMatchAst, "longest-match");
+                longestMatchUniqueAmbs = collectAmbs(noLongestMatchAst).size();// exportAmbiguities(f,
+                                                                               // noLongestMatchAst, "longest-match");
                 longestMatchTopLevelAmbs = exportAmbiguities(f, noLongestMatchAst, "longest-match");
             }
 
@@ -376,7 +378,7 @@ public class Main {
             JAVAresultLogger.info(opStyleUniqueAmbs + ";");
             JAVAresultLogger.info(danglingElseUniqueAmbs + ";");
             JAVAresultLogger.info(longestMatchUniqueAmbs + ";");
-            
+
             countBrackets(ast, ptg, debugLogger, JAVAresultLogger);
 
             filesLogger.info(f.getAbsolutePath());
@@ -459,7 +461,7 @@ public class Main {
         debugLogger.info("processed {} states.", finalProcessedStates);
         debugLogger.info("and used {} productions.", finalProductionsUsed);
         debugLogger.info("Files parsed: {}", filesParsed);
-        debugLogger.info("Files that did not parse: {}", javaFiles.size() - filesParsed);
+        debugLogger.info("Files that did not parse: {}", javaFiles.size() - filesParsed - 1);
         debugLogger.info("-------------------------------------");
 
         JAVAresultLogger.info("\n\n\n" + totalProductions + ";" + totalStates + ";" + finalStates + ";"
@@ -495,7 +497,7 @@ public class Main {
         debugLogger.info("Creating the list of all OCaml Files:");
         File oCamlDir = new File("test/OCaml/");
         Collection<File> oCamlFiles = FileUtils.listFiles(oCamlDir, new String[] { "ml" }, true);
-        debugLogger.info("{} files created.", oCamlFiles.size());
+        debugLogger.info("{} files created.", oCamlFiles.size() - 1);
         debugLogger.info("-------------------------------------");
 
         final TermTreeFactory factory = new TermTreeFactory(new ParentTermFactory(tf));
@@ -572,12 +574,6 @@ public class Main {
                 }
             }
 
-            // FIXME the files below cause a stack overflow when imploding
-            if(checkProblematicFiles(f)) {
-                probfilesLogger.info(f.getAbsolutePath());
-                continue;
-            }
-
             if(i != 0) {
                 debugLogger.info("");
                 resultLogger.info("\n");
@@ -602,6 +598,14 @@ public class Main {
 
             debugLogger.info("{} lines.", lineCount);
             resultLogger.info(lineCount + ";");
+
+            // FIXME the files below cause a stack overflow when imploding
+            if(checkProblematicFiles(f, debugLogger, resultLogger)) {
+                probfilesLogger.info(f.getAbsolutePath());
+                continue;
+            }
+
+
 
             ParseTable individualPT;
             try {
@@ -646,6 +650,7 @@ public class Main {
                 debugLogger.info("Operator-style ambiguity parser failed with exception {}", e.getMessage());
                 resultLogger.info("operator-style parsing failed.");
                 e.printStackTrace();
+                probfilesLogger.info(f.getAbsolutePath());
                 continue;
             }
 
@@ -701,17 +706,17 @@ public class Main {
 
             if(opStyleAmbs != 0) {
                 opStyleUniqueAmbs = collectAmbs(noOperatorAmbAst).size();
-                opStyleTopLevelAmbs = exportAmbiguities(f, noOperatorAmbAst, "operator-style"); //countTopLevelAmbiguities(noOperatorAmbAst);
+                opStyleTopLevelAmbs = exportAmbiguities(f, noOperatorAmbAst, "operator-style"); // countTopLevelAmbiguities(noOperatorAmbAst);
             }
 
             if(danglingElseAmbs != 0) {
                 danglingElseUniqueAmbs = collectAmbs(noDanglingElseAst).size();
-                danglingElseTopLevelAmbs = exportAmbiguities(f, noDanglingElseAst, "dangling-else"); //countTopLevelAmbiguities(noDanglingElseAst);
+                danglingElseTopLevelAmbs = exportAmbiguities(f, noDanglingElseAst, "dangling-else"); // countTopLevelAmbiguities(noDanglingElseAst);
             }
 
             if(longestMatchAmbs != 0) {
                 longestMatchUniqueAmbs = collectAmbs(noLongestMatchAst).size();
-                longestMatchTopLevelAmbs = exportAmbiguities(f, noLongestMatchAst, "longest-match"); //countTopLevelAmbiguities(noLongestMatchAst);
+                longestMatchTopLevelAmbs = exportAmbiguities(f, noLongestMatchAst, "longest-match"); // countTopLevelAmbiguities(noLongestMatchAst);
             }
 
             long nodeCount = getNodeCount(ast);
@@ -829,7 +834,7 @@ public class Main {
         debugLogger.info("processed {} states.", finalProcessedStates);
         debugLogger.info("and used {} productions.", finalProductionsUsed);
         debugLogger.info("Files parsed: {}", filesParsed);
-        debugLogger.info("Files that did not parse: {}", oCamlFiles.size() - filesParsed);
+        debugLogger.info("Files that did not parse: {}", oCamlFiles.size() - filesParsed - 1);
         debugLogger.info("-------------------------------------");
 
         resultLogger.info("\n\n\n" + totalProductions + ";" + totalStates + ";" + finalStates + ";"
@@ -989,26 +994,44 @@ public class Main {
      * }
      */
 
-    private static boolean checkProblematicFiles(File f) {
-        // too many longest-match ambiguities
-        return f.getPath().equals("test/OCaml/bucklescript/jscomp/test/gpr_1150.ml")
-            // parser time out
-            || f.getPath().equals("test/OCaml/bucklescript/jscomp/test/ocaml_typedtree_test.ml")
-            // too many operator-style ambiguities
-            || f.getPath().equals("test/OCaml/tezos/src/node/shell/validator.ml")
+    private static boolean checkProblematicFiles(File f, Logger debugLogger, org.apache.log4j.Logger resultLogger) {
+        if(f.getPath().equals("test/OCaml/bucklescript/jscomp/test/gpr_1150.ml")) {
+            debugLogger.info("SGLR error - too many longest match ambiguities to implode.");
+            resultLogger.info("SGLR error - too many longest match ambiguities to implode.");
+            return true;
+        }
+
+        if(f.getPath().equals("test/OCaml/bucklescript/jscomp/test/ocaml_typedtree_test.ml")) {
+            debugLogger.info("SGLR error - parser time out.");
+            resultLogger.info("SGLR error - parser time out.");
+            return true;
+        }
+
+        if(f.getPath().equals("test/OCaml/tezos/src/node/shell/validator.ml")
             || f.getPath().equals("test/OCaml/tezos/src/proto/alpha/amendment.ml")
             || f.getPath().equals("test/OCaml/tezos/test/p2p/test_p2p_connection_pool.ml")
             || f.getPath().equals("test/OCaml/tezos/test/proto_alpha/test_endorsement.ml")
-            || f.getPath().equals("test/OCaml/tezos/src/proto/alpha/contract_storage.ml")
-            // too many unicode characters?
-            || f.getPath().equals("test/OCaml/bucklescript/jscomp/test/string_interp_test.ml")
+            || f.getPath().equals("test/OCaml/tezos/src/proto/alpha/contract_storage.ml")) {
+            debugLogger.info("SGLR error - too many operator style ambiguities to implode.");
+            resultLogger.info("SGLR error - too many operator style ambiguities to implode.");
+            return true;
+        }
+
+        if(f.getPath().equals("test/OCaml/bucklescript/jscomp/test/string_interp_test.ml")
             || f.getPath().equals("test/OCaml/bucklescript/jscomp/test/chn_test.ml")
-            || f.getPath().equals("test/OCaml/tezos/src/client/client_network.ml")
-            // too long literals?
-            || f.getPath().equals("test/OCaml/bucklescript/jscomp/test/flow_parser_reg_test.ml");
+            || f.getPath().equals("test/OCaml/tezos/src/client/client_network.ml")) {
+            debugLogger.info("SGLR error - failed to parse unicode characters.");
+            resultLogger.info("SGLR error - failed to parse unicode characters.");
+            return true;
+        }
 
+        if(f.getPath().equals("test/OCaml/bucklescript/jscomp/test/flow_parser_reg_test.ml")) {
+            debugLogger.info("SGLR error - too long literals to implode.");
+            resultLogger.info("SGLR error - too long literals to implode.");
+            return true;
+        }
 
-
+        return false;
     }
 
     private static long exportAmbiguities(File f, IStrategoTerm ast, String kind) {
@@ -1026,7 +1049,7 @@ public class Main {
             parentDir.mkdirs();
         }
 
-        Set<IStrategoTerm> ambs = collectTopLevelAmbs(ast);
+        List<IStrategoTerm> ambs = collectTopLevelAmbs(ast);
 
         FileWriter out = null;
         try {
@@ -1079,8 +1102,8 @@ public class Main {
         return ambs;
     }
 
-    private static Set<IStrategoTerm> collectTopLevelAmbs(IStrategoTerm ast) {
-        Set<IStrategoTerm> ambs = Sets.newHashSet();
+    private static List<IStrategoTerm> collectTopLevelAmbs(IStrategoTerm ast) {
+        List<IStrategoTerm> ambs = Lists.newArrayList();
 
         if(ast instanceof IStrategoAppl) {
             IStrategoAppl amb = (IStrategoAppl) ast;
